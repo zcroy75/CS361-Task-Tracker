@@ -59,8 +59,12 @@ def main():
             case 'delete':
                 task_list = delete(task_list)
             case 'quit':
-                print("Thank you for using the task tracker program!\n")
-                break
+                quit_choice = input("Are you sure you want to exit the program? Type 'yes' to confirm, type anything else to stay: ")
+                if quit_choice == 'yes':
+                    print("Thank you for using the task tracker program!\n")
+                    break
+                else:
+                    print("")
             case _:
                 print("You have entered an invalid command, please double check that your input is an accepted command.\n")
     return
