@@ -43,7 +43,7 @@ def delete(task_list):
 def main():
     # Introduce program to user
     print("Welcome, user!")
-    print("This program will keep track of your tasks, including their due dates.")
+    print("This program will keep track of your tasks as a list.")
     print("Newest features of this program include the ability to remove tasks from your list.")
     print("Please view the COMMANDS section below for more info on available features.\n")
 
