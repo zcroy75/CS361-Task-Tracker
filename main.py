@@ -29,11 +29,15 @@ def view(task_list):
 
 
 def delete(task_list):
+    confirm_choice = input("Be aware that removing a task is final. Type 'confirm' if you would still like to continue, type anything else if you no longer want to delete a task: ")
+    if confirm_choice != 'confirm':
+        print("No tasks have been removed from the list.\n")
+        return task_list
     view_choice = input("Would you like to see the list of your tasks first? Type 'yes' to confirm, type anything else to go straight to deleting a task: ")
     if view_choice == 'yes':
         print("Here are your tasks:")
         view(task_list)
-    choice = int(input("Please provide the number of the task you would like to remove: "))
+    choice = int(input("Please provide the number of the task you would like to remove, or type 'cancel' if you have decided not to remove a task: "))
     if choice <= len(task_list):
         task_list.pop(choice - 1)
         print("Your task has been successfully removed from the list.\n")
