@@ -7,21 +7,36 @@ def guide():
     print("Type 'quit' to exit the program.\n")
 
     # Prompt user for action
-    print("What would you like to do?")
-    return input("Input: ")
+    return input("What would you like to do?\n")
 
 
 def add(task_list):
+    task = input("Please write your task below:\n")
+    task_list.append(task)
+    print("")
     return task_list
 
 
 def view(task_list):
     if task_list == []:
         return print("The list of tasks is empty! Add tasks by using the 'add' command.\n")
+    index = 1
+    for task in task_list:
+        print(index, ": ", task, sep='')
+        index += 1
+    print("")
     return
 
 
 def delete(task_list):
+    print("Here are your tasks:")
+    view(task_list)
+    choice = int(input("Please provide the number of the task you would like to remove: "))
+    if choice <= len(task_list):
+        task_list.pop(choice - 1)
+        print("Your task has been successfully removed from the list.\n")
+    else:
+        print("You entered an invalid number, please double check your task list and try again.\n")
     return task_list
 
 
