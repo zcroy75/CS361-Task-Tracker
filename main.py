@@ -29,8 +29,10 @@ def view(task_list):
 
 
 def delete(task_list):
-    print("Here are your tasks:")
-    view(task_list)
+    view_choice = input("Would you like to see the list of your tasks first? Type 'yes' to confirm, type anything else to go straight to deleting a task: ")
+    if view_choice == 'yes':
+        print("Here are your tasks:")
+        view(task_list)
     choice = int(input("Please provide the number of the task you would like to remove: "))
     if choice <= len(task_list):
         task_list.pop(choice - 1)
