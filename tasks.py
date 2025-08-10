@@ -2,12 +2,14 @@
 
 
 from flask import Flask, request, jsonify
+import requests
 from datetime import datetime
 
 
 app = Flask(__name__)
 tasks = {}
 task_counter = 1
+TAG_SERVICE = "http://localhost:5001"
 
 
 @app.route("/tasks", methods = ["POST"])
@@ -55,6 +57,18 @@ def delete_task(task_id):
 @app.route("/tasks", methods = ["GET"])
 def get_all_tasks():
     return jsonify(list(tasks.values())), 200
+
+
+@app.route("/tasks/<int:task_id>/tags/<int:tag_id>", methods=["POST"])
+def add_tag_to_task(task_id, tag_id):
+    tag_response = requests.get(f"{TAG_SERVICE}/tags/{tag_id}")
+    if tag_response.status_code != 200 or not tag_response.json():
+        return jsonify({"error": "Tag not found"}), 404
+
+    tag_data = tag_response.json()
+    if tag_data not in tasks[task_id]["tags"]:
+        tasks[task_id]["tags"].append(tag_data)
+    return jsonify(tasks[task_id]), 200
 
 
 if __name__ == "__main__":

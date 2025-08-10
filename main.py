@@ -9,37 +9,47 @@ GROUP_SERVICE = "http://localhost:5002"
 SORT_SERVICE = "http://localhost:6000"
 
 
-def print_nice(data):
-    print(json.dumps(data, indent = 2))
+def print_tasks(tasks):
+    if not tasks:
+        print("\nNo tasks found.\n")
+        return
+
+    print("\n=== Your Tasks ===")
+    for idx, task in enumerate(tasks, 1):
+        task_name = task.get("task_name", "Unnamed Task")
+        due_date = task.get("due_date", "No due date")
+        tags = ", ".join(task.get("tags", [])) if task.get("tags") else "No tags"
+        group = task.get("group", "No group")
+        print(f"{idx}. {task_name}")
+        print(f"   Due: {due_date}")
+        print(f"   Tags: {tags}")
+        print(f"   Group: {group}")
+        print("-" * 25)
+    print()
 
 
 def create_task():
     name = input("Enter task name: ")
     due_date = input("Enter task due date (YYYY-MM-DD): ")
-    task = {"task_name": name, "due_date": due_date}
-    try:
-        r = requests.post(f"{CRUD_SERVICE}/tasks", json = task)
-        print("Task created:", r.json())
-    except:
-        print("Error creating task.")
+    payload = {"task_name": name, "due_date": due_date}
+    r = requests.post(f"{CRUD_SERVICE}/tasks", json = payload)
+    print(r.json())
 
 
 def list_tasks():
-    try:
-        r = requests.get(f"{CRUD_SERVICE}/tasks")
-        tasks = r.json()
-        print("--- Tasks ---")
-        print_nice(tasks)
-    except:
-        print("Error listing tasks.")
+    r = requests.get(f"{CRUD_SERVICE}/tasks")
+    if r.status_code == 200:
+        print_tasks(r.json())
+    else:
+        print("Error retrieving tasks.")
 
 
 def update_task():
     task_id = input("Enter task ID to update: ")
     name = input("Enter new task name: ")
     due_date = input("Enter new due date (YYYY-MM-DD): ")
-    task = {"task_name": name, "due_date": due_date}
-    r = requests.put(f"{CRUD_SERVICE}/tasks/{task_id}", json = task)
+    payload = {"task_name": name, "due_date": due_date}
+    r = requests.put(f"{CRUD_SERVICE}/tasks/{task_id}", json = payload)
     print(r.json())
 
 
@@ -48,11 +58,42 @@ def delete_task():
     if check_list_choice == 'y':
         list_tasks()
     task_id = input("Enter task ID to delete: ")
-    try:
-        r = requests.delete(f"{CRUD_SERVICE}/tasks/{task_id}")
-        print("Response:", r.json())
-    except:
-        print("Error deleting task.")
+    r = requests.delete(f"{CRUD_SERVICE}/tasks/{task_id}")
+    print(r.json())
+
+
+def create_tag():
+    name = input("Enter tag name: ")
+    payload = {"name": name}
+    r = requests.post(f"{TAGS_SERVICE}/tags", json = payload)
+    print(r.json())
+
+
+def list_tags():
+    r = requests.get(f"{TAGS_SERVICE}/tags")
+    tags = r.json()
+
+    if not tags:
+        print("\nNo tags found.\n")
+        return False
+
+    if r.status_code == 200:
+        print("\n=== Your Tags ===")
+        for tag in tags:
+            print(f"ID: {tag.get('id')} | Name: {tag.get('name')}")
+        print("-" * 25 + "\n")
+    else:
+        print("Error retrieving tags.")
+
+
+def add_tag():
+    if list_tags() == False:
+        return
+    task_id = input("Enter task ID to tag: ")
+    tag_id = input("Enter tag ID: ")
+    r = requests.post(f"{CRUD_SERVICE}/tasks/{task_id}/tags/{tag_id}")
+    print("Status Code:", r.status_code)
+    print("Response Text:", r.text)
 
 
 def menu():
@@ -63,6 +104,8 @@ def menu():
 2. List Tasks
 3. Update Task
 4. Delete Task
+5. Create New Tag
+6. Add Tag to Task
 0. Exit
 """)
 
@@ -93,6 +136,12 @@ def main():
             # Delete task
             case '4':
                 delete_task()
+            # Create new tag
+            case '5':
+                create_tag()
+            # Add tag to task
+            case '6':
+                add_tag()
             # Exit program
             case '0':
                 quit_choice = input("Are you sure you want to exit the program? Type 'yes' to confirm, type anything else to stay: ")
