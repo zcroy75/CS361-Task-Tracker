@@ -59,15 +59,18 @@ def get_all_tasks():
     return jsonify(list(tasks.values())), 200
 
 
-@app.route("/tasks/<int:task_id>/tags/<int:tag_id>", methods=["POST"])
+@app.route("/tasks/<task_id>/tags/<tag_id>", methods=["POST"])
 def add_tag_to_task(task_id, tag_id):
+    if task_id not in tasks:
+        return jsonify({"error": "Task not found"}), 404
+
     tag_response = requests.get(f"{TAG_SERVICE}/tags/{tag_id}")
     if tag_response.status_code != 200 or not tag_response.json():
         return jsonify({"error": "Tag not found"}), 404
 
     tag_data = tag_response.json()
     if tag_data not in tasks[task_id]["tags"]:
-        tasks[task_id]["tags"].append(tag_data)
+        tasks[task_id]["tags"].append(tag_data["name"])
     return jsonify(tasks[task_id]), 200
 
 

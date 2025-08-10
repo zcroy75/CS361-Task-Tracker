@@ -96,6 +96,15 @@ def add_tag():
     print("Response Text:", r.text)
 
 
+def sort_tasks():
+    r = requests.get(f"{CRUD_SERVICE}/tasks")
+    tasks = r.json()
+    r_sort = requests.post(f"{SORT_SERVICE}/organize", json = {"tasks": tasks})
+    sorted_tasks = r_sort.json().get("tasks", [])
+    print("\nTasks sorted by due date:")
+    print_tasks(sorted_tasks)
+
+
 def menu():
     # Print available commands to user
     print("""
@@ -106,6 +115,7 @@ def menu():
 4. Delete Task
 5. Create New Tag
 6. Add Tag to Task
+7. View tasks by Due Date
 0. Exit
 """)
 
@@ -142,6 +152,9 @@ def main():
             # Add tag to task
             case '6':
                 add_tag()
+            # Sort tasks by due date
+            case '7':
+                sort_tasks()
             # Exit program
             case '0':
                 quit_choice = input("Are you sure you want to exit the program? Type 'yes' to confirm, type anything else to stay: ")
