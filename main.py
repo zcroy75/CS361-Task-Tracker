@@ -4,6 +4,9 @@ import json
 
 # Microservice URLs
 CRUD_SERVICE = "http://localhost:5000"
+TAGS_SERVICE = "http://localhost:5001"
+GROUP_SERVICE = "http://localhost:5002"
+SORT_SERVICE = "http://localhost:6000"
 
 
 def print_nice(data):
@@ -25,10 +28,19 @@ def list_tasks():
     try:
         r = requests.get(f"{CRUD_SERVICE}/tasks")
         tasks = r.json()
-        print("\n--- Tasks ---")
+        print("--- Tasks ---")
         print_nice(tasks)
     except:
         print("Error listing tasks.")
+
+
+def update_task():
+    task_id = input("Enter task ID to update: ")
+    name = input("Enter new task name: ")
+    due_date = input("Enter new due date (YYYY-MM-DD): ")
+    task = {"task_name": name, "due_date": due_date}
+    r = requests.put(f"{CRUD_SERVICE}/tasks/{task_id}", json = task)
+    print(r.json())
 
 
 def delete_task():
@@ -45,14 +57,17 @@ def delete_task():
 
 def menu():
     # Print available commands to user
-    print("\n=== To-Do App Menu ===")
-    print("1. Create Task")
-    print("2. List Tasks")
-    print("3. Delete Task")
-    print("0. Exit")
+    print("""
+=== To-Do App Menu ===
+1. Create Task
+2. List Tasks
+3. Update Task
+4. Delete Task
+0. Exit
+""")
 
     # Prompt user for action
-    return input("\nChoose an option: ")
+    return input("Choose an option: ")
 
 
 def main():
@@ -72,8 +87,11 @@ def main():
             # View tasks
             case '2':
                 list_tasks()
-            # Delete task
+            # Update task
             case '3':
+                update_task()
+            # Delete task
+            case '4':
                 delete_task()
             # Exit program
             case '0':
