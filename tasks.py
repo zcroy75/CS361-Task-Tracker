@@ -26,7 +26,7 @@ def create_task():
         "due_date": data.get("due_date"),
         "status": "incomplete",
         "tags": [],
-        "group_id": None
+        "group": None
     }
 
     tasks[task_id] = task
@@ -38,7 +38,7 @@ def get_task(task_id):
     return jsonify(tasks.get(task_id, {})), 200
 
 
-@app.route("/tasks/<task_id>", methods = ["PUT"])
+@app.route("/tasks/<task_id>", methods = ["PUT", "PATCH"])
 def update_task(task_id):
     if task_id in tasks:
         tasks[task_id].update(request.get_json())

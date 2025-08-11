@@ -2,11 +2,13 @@
 
 
 from flask import Flask, request, jsonify
+import requests
 
 
 app = Flask(__name__)
 groups = {}
 group_counter = 1
+CRUD_SERVICE = "http://localhost:5000"
 
 
 @app.route("/groups", methods = ["POST"])
@@ -15,7 +17,7 @@ def create_group():
     data = request.get_json()
     group_id = str(group_counter)
     group_counter += 1
-    groups[group_id] = {"id": group_id, "name": data["name"], "tasks": []}
+    groups[group_id] = {"id": group_id, "name": data["group_name"], "tasks": []}
     return jsonify(groups[group_id]), 201
 
 
@@ -23,7 +25,11 @@ def create_group():
 def add_task_to_group(group_id):
     data = request.get_json()
     if group_id in groups:
-        groups[group_id]["tasks"].append(data["task_id"])
+        task_id = data["task_id"]
+        groups[group_id]["tasks"].append("task_id")
+
+        payload = {"group": groups[group_id]["name"]}
+        requests.patch(f"{CRUD_SERVICE}/tasks/{task_id}", json = payload)
         return jsonify(groups[group_id]), 200
     return jsonify({"error": "Group not found"}), 404
 

@@ -33,7 +33,7 @@ def create_task():
     due_date = input("Enter task due date (YYYY-MM-DD): ")
     payload = {"task_name": name, "due_date": due_date}
     r = requests.post(f"{CRUD_SERVICE}/tasks", json = payload)
-    print(r.json())
+    print("New task created.")
 
 
 def list_tasks():
@@ -50,7 +50,7 @@ def update_task():
     due_date = input("Enter new due date (YYYY-MM-DD): ")
     payload = {"task_name": name, "due_date": due_date}
     r = requests.put(f"{CRUD_SERVICE}/tasks/{task_id}", json = payload)
-    print(r.json())
+    print("Task updated.")
 
 
 def delete_task():
@@ -59,14 +59,14 @@ def delete_task():
         list_tasks()
     task_id = input("Enter task ID to delete: ")
     r = requests.delete(f"{CRUD_SERVICE}/tasks/{task_id}")
-    print(r.json())
+    print("Task deleted.")
 
 
 def create_tag():
     name = input("Enter tag name: ")
     payload = {"name": name}
     r = requests.post(f"{TAGS_SERVICE}/tags", json = payload)
-    print(r.json())
+    print("New tag created.")
 
 
 def list_tags():
@@ -92,8 +92,41 @@ def add_tag():
     task_id = input("Enter task ID to tag: ")
     tag_id = input("Enter tag ID: ")
     r = requests.post(f"{CRUD_SERVICE}/tasks/{task_id}/tags/{tag_id}")
-    print("Status Code:", r.status_code)
-    print("Response Text:", r.text)
+    print("Tag added to task.")
+
+
+def create_group():
+    name = input("Enter group name: ")
+    payload = {"group_name": name}
+    r = requests.post(f"{GROUP_SERVICE}/groups", json = payload)
+    print("New group created.")
+
+
+def list_groups():
+    r = requests.get(f"{GROUP_SERVICE}/groups")
+    groups = r.json()
+
+    if not groups:
+        print("\nNo groups found.\n")
+        return False
+
+    if r.status_code == 200:
+        print("\n=== Your Groups ===")
+        for group in groups:
+            print(f"ID: {group.get('id')} | Name: {group.get('name')}")
+        print("-" * 25 + "\n")
+    else:
+        print("Error retrieving groups.")
+
+
+def assign_to_group():
+    if list_groups() == False:
+        return
+    group_id = input("Enter group ID: ")
+    task_id = input("Enter task ID to assign: ")
+    payload = {"task_id": task_id}
+    r = requests.post(f"{GROUP_SERVICE}/groups/{group_id}/tasks", json = payload)
+    print("Task assigned to group.")
 
 
 def sort_tasks():
@@ -115,7 +148,9 @@ def menu():
 4. Delete Task
 5. Create New Tag
 6. Add Tag to Task
-7. View tasks by Due Date
+7. Create New Group
+8. Assign Task to Group
+9. View tasks by Due Date
 0. Exit
 """)
 
@@ -152,8 +187,14 @@ def main():
             # Add tag to task
             case '6':
                 add_tag()
-            # Sort tasks by due date
+            # Create new group
             case '7':
+                create_group()
+            # Assign task to group
+            case '8':
+                assign_to_group()
+            # Sort tasks by due date
+            case '9':
                 sort_tasks()
             # Exit program
             case '0':
