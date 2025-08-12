@@ -1,10 +1,6 @@
 # Microservice B
-
-
 from flask import Flask, request, jsonify
 import requests
-from datetime import datetime
-
 
 app = Flask(__name__)
 tasks = {}
@@ -12,7 +8,7 @@ task_counter = 1
 TAG_SERVICE = "http://localhost:5001"
 
 
-@app.route("/tasks", methods = ["POST"])
+@app.route("/tasks", methods=["POST"])
 def create_task():
     global task_counter
     data = request.get_json()
@@ -33,12 +29,12 @@ def create_task():
     return jsonify(task), 201
 
 
-@app.route("/tasks/<task_id>", methods = ["GET"])
+@app.route("/tasks/<task_id>", methods=["GET"])
 def get_task(task_id):
     return jsonify(tasks.get(task_id, {})), 200
 
 
-@app.route("/tasks/<task_id>", methods = ["PUT", "PATCH"])
+@app.route("/tasks/<task_id>", methods=["PUT", "PATCH"])
 def update_task(task_id):
     if task_id in tasks:
         tasks[task_id].update(request.get_json())
@@ -46,7 +42,7 @@ def update_task(task_id):
     return jsonify({"error": "Task not found"}), 404
 
 
-@app.route("/tasks/<task_id>", methods = ["DELETE"])
+@app.route("/tasks/<task_id>", methods=["DELETE"])
 def delete_task(task_id):
     if task_id in tasks:
         del tasks[task_id]
@@ -54,7 +50,7 @@ def delete_task(task_id):
     return jsonify({"error": "Task not found"}), 404
 
 
-@app.route("/tasks", methods = ["GET"])
+@app.route("/tasks", methods=["GET"])
 def get_all_tasks():
     return jsonify(list(tasks.values())), 200
 
@@ -75,4 +71,4 @@ def add_tag_to_task(task_id, tag_id):
 
 
 if __name__ == "__main__":
-    app.run(debug = True, port = 5000)
+    app.run(debug=True, port=5000)

@@ -1,6 +1,4 @@
 import requests
-import json
-
 
 # Microservice URLs
 CRUD_SERVICE = "http://localhost:5000"
@@ -18,7 +16,11 @@ def print_tasks(tasks):
     for idx, task in enumerate(tasks, 1):
         task_name = task.get("task_name", "Unnamed Task")
         due_date = task.get("due_date", "No due date")
-        tags = ", ".join(task.get("tags", [])) if task.get("tags") else "No tags"
+        tags = (
+            ", ".join(task.get("tags", []))
+            if task.get("tags")
+            else "No tags"
+        )
         group = task.get("group", "No group")
         print(f"{idx}. {task_name}")
         print(f"   Due: {due_date}")
@@ -32,7 +34,7 @@ def create_task():
     name = input("Enter task name: ")
     due_date = input("Enter task due date (YYYY-MM-DD): ")
     payload = {"task_name": name, "due_date": due_date}
-    r = requests.post(f"{CRUD_SERVICE}/tasks", json = payload)
+    requests.post(f"{CRUD_SERVICE}/tasks", json=payload)
     print("New task created.")
 
 
@@ -49,23 +51,26 @@ def update_task():
     name = input("Enter new task name: ")
     due_date = input("Enter new due date (YYYY-MM-DD): ")
     payload = {"task_name": name, "due_date": due_date}
-    r = requests.put(f"{CRUD_SERVICE}/tasks/{task_id}", json = payload)
+    requests.put(f"{CRUD_SERVICE}/tasks/{task_id}", json=payload)
     print("Task updated.")
 
 
 def delete_task():
-    check_list_choice = input("Would you like to see your task list before deleting a task? ('y' to confirm): ")
+    check_list_choice = input(
+        "Would you like to see your task list before deleting a task? "
+        "('y' to confirm): "
+    )
     if check_list_choice == 'y':
         list_tasks()
     task_id = input("Enter task ID to delete: ")
-    r = requests.delete(f"{CRUD_SERVICE}/tasks/{task_id}")
+    requests.delete(f"{CRUD_SERVICE}/tasks/{task_id}")
     print("Task deleted.")
 
 
 def create_tag():
     name = input("Enter tag name: ")
     payload = {"name": name}
-    r = requests.post(f"{TAGS_SERVICE}/tags", json = payload)
+    requests.post(f"{TAGS_SERVICE}/tags", json=payload)
     print("New tag created.")
 
 
@@ -87,18 +92,18 @@ def list_tags():
 
 
 def add_tag():
-    if list_tags() == False:
+    if list_tags() is False:
         return
     task_id = input("Enter task ID to tag: ")
     tag_id = input("Enter tag ID: ")
-    r = requests.post(f"{CRUD_SERVICE}/tasks/{task_id}/tags/{tag_id}")
+    requests.post(f"{CRUD_SERVICE}/tasks/{task_id}/tags/{tag_id}")
     print("Tag added to task.")
 
 
 def create_group():
     name = input("Enter group name: ")
     payload = {"group_name": name}
-    r = requests.post(f"{GROUP_SERVICE}/groups", json = payload)
+    requests.post(f"{GROUP_SERVICE}/groups", json=payload)
     print("New group created.")
 
 
@@ -120,19 +125,19 @@ def list_groups():
 
 
 def assign_to_group():
-    if list_groups() == False:
+    if list_groups() is False:
         return
     group_id = input("Enter group ID: ")
     task_id = input("Enter task ID to assign: ")
     payload = {"task_id": task_id}
-    r = requests.post(f"{GROUP_SERVICE}/groups/{group_id}/tasks", json = payload)
+    requests.post(f"{GROUP_SERVICE}/groups/{group_id}/tasks", json=payload)
     print("Task assigned to group.")
 
 
 def sort_tasks():
     r = requests.get(f"{CRUD_SERVICE}/tasks")
     tasks = r.json()
-    r_sort = requests.post(f"{SORT_SERVICE}/organize", json = {"tasks": tasks})
+    r_sort = requests.post(f"{SORT_SERVICE}/organize", json={"tasks": tasks})
     sorted_tasks = r_sort.json().get("tasks", [])
     print("\nTasks sorted by due date:")
     print_tasks(sorted_tasks)
@@ -198,14 +203,21 @@ def main():
                 sort_tasks()
             # Exit program
             case '0':
-                quit_choice = input("Are you sure you want to exit the program? Type 'yes' to confirm, type anything else to stay: ")
+                quit_choice = input(
+                    "Are you sure you want to exit the program? "
+                    "Type 'yes' to confirm, type anything else to stay: "
+                )
                 if quit_choice == 'yes':
                     print("Thank you for using the task tracker program!\n")
                     break
                 else:
                     print("")
             case _:
-                print("You have entered an invalid command, please double check that your input is an accepted command.\n")
+                print(
+                    "You have entered an invalid command, "
+                    "please double check that your input is an "
+                    "accepted command.\n"
+                )
     return
 
 
