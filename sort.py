@@ -1,5 +1,4 @@
 # Microservice A designed by teammate Peter Nikitakis
-
 from flask import Flask, request, jsonify
 from datetime import datetime
 
